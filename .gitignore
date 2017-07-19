@@ -1,0 +1,10 @@
+# etc
+.DS
+*.npy
+*.png
+checkopoint
+ali_model*
+
+# figs
+
+/figs
