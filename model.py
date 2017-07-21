@@ -42,19 +42,35 @@ def dense(input, out_num, activation_fn=None, scope='dense', batch_norm=False, i
 # encoder
 def Q(x, is_tr=None):
     with tf.variable_scope('GQ'):
-        fc1 = dense(x, arg.E_layer, activation_fn=tf.nn.relu, scope='fc1', batch_norm=True,
-                    is_tr=is_tr)
-        fc2 = dense(fc1, arg.E_layer, activation_fn=tf.nn.relu, scope='fc2', batch_norm=True,
-                    is_tr=is_tr)
-        if arg.param_trick == 'split':
-            fc3 = dense(fc2, 2 * z_dim, activation_fn=tf.nn.relu, scope='fc3')
-            mu, log_sig_sq = tf.split(fc3, 2, axis=1)
+        if is_tr is not None:
+            fc1 = dense(x, arg.E_layer, activation_fn=tf.nn.relu, scope='fc1', batch_norm=True,
+                        is_tr=is_tr)
+            fc2 = dense(fc1, arg.E_layer, activation_fn=tf.nn.relu, scope='fc2', batch_norm=True,
+                        is_tr=is_tr)
+            if arg.param_trick == 'split':
+                fc3 = dense(fc2, 2 * z_dim, activation_fn=tf.nn.relu, scope='fc3')
+                mu, log_sig_sq = tf.split(fc3, 2, axis=1)
+            else:
+                mu = dense(fc2, z_dim, scope='mu')
+                log_sig_sq = dense(fc2, z_dim, scope='log_sig_sq')
+            e = tf.random_normal([batch, z_dim])
+            out = tf.add(mu, tf.multiply(tf.exp(log_sig_sq / 2), e))
+            return out
         else:
-            mu = dense(fc2, z_dim, scope='mu')
-            log_sig_sq = dense(fc2, z_dim, scope='log_sig_sq')
-        e = tf.random_normal([batch, z_dim])
-        out = tf.add(mu, tf.multiply(tf.exp(log_sig_sq / 2), e))
-    return out
+            fc1 = layer.fully_connected(x, 400, activation_fn=tf.nn.relu, scope='fc1')
+            fc2 = layer.fully_connected(fc1, 400, activation_fn=tf.nn.relu, scope='fc2')
+
+            if arg.param_trick == 'split':
+                fc3 = dense(fc2, 2 * z_dim, activation_fn=tf.nn.relu, scope='fc3')
+                mu, log_sig_sq = tf.split(fc3, 2, axis=1)
+            else:
+                mu = layer.fully_connected(fc2, z_dim, activation_fn=None, scope='mu')
+                log_sig_sq = layer.fully_connected(fc2, z_dim, activation_fn=None,
+                                                   scope='log_sig_sq')
+
+            e = tf.random_normal([batch, z_dim])
+            out = tf.add(mu, tf.multiply(tf.exp(log_sig_sq / 2), e))
+            return out
 
 
 # input: latent z -> return: fake image x
@@ -62,28 +78,45 @@ def Q(x, is_tr=None):
 # decoder
 def P(z, is_tr):
     with tf.variable_scope('GP'):
-        fc1 = dense(z, arg.G_layer, activation_fn=tf.nn.relu, scope='fc1', batch_norm=True,
-                    is_tr=is_tr)
-        fc2 = dense(fc1, arg.G_layer, activation_fn=tf.nn.relu, scope='fc2', batch_norm=True,
-                    is_tr=is_tr)
-        fc3 = dense(fc2, arg.G_layer, activation_fn=tf.nn.relu, scope='fc3', batch_norm=True,
-                    is_tr=is_tr)
-        out = dense(fc3, x_dim, activation_fn=None, scope='out')
-    return out
+        if is_tr is not None:
+            fc1 = dense(z, arg.G_layer, activation_fn=tf.nn.relu, scope='fc1', batch_norm=True,
+                        is_tr=is_tr)
+            fc2 = dense(fc1, arg.G_layer, activation_fn=tf.nn.relu, scope='fc2', batch_norm=True,
+                        is_tr=is_tr)
+            fc3 = dense(fc2, arg.G_layer, activation_fn=tf.nn.relu, scope='fc3', batch_norm=True,
+                        is_tr=is_tr)
+            out = dense(fc3, x_dim, activation_fn=None, scope='out')
+            return out
+
+        else:
+            fc1 = layer.fully_connected(z, 400, activation_fn=tf.nn.relu, scope='fc1')
+            fc2 = layer.fully_connected(fc1, 400, activation_fn=tf.nn.relu, scope='fc2')
+            fc3 = layer.fully_connected(fc2, 400, activation_fn=tf.nn.relu, scope='fc3')
+            out = layer.fully_connected(fc3, x_dim, activation_fn=None, scope='out')
+            return out
 
 
 # input -> x, z ==> concat
 def D(x, z, is_tr):
     with tf.variable_scope('D'):
-        input = tf.concat([x, z], axis=1)
-        fc1 = dense(input, arg.D_layer, activation_fn=tf.nn.relu, scope='fc1', batch_norm=True,
-                    is_tr=is_tr)
-        fc2 = dense(fc1, arg.D_layer, activation_fn=tf.nn.relu, scope='fc2', batch_norm=True,
-                    is_tr=is_tr)
-        fc3 = dense(fc2, arg.D_layer, activation_fn=tf.nn.relu, scope='fc3', batch_norm=True,
-                    is_tr=is_tr)
-        out = dense(fc3, 1, activation_fn=tf.nn.sigmoid, scope='out')
-    return out
+        if is_tr is not None:
+            input = tf.concat([x, z], axis=1)
+            fc1 = dense(input, arg.D_layer, activation_fn=tf.nn.relu, scope='fc1', batch_norm=True,
+                        is_tr=is_tr)
+            fc2 = dense(fc1, arg.D_layer, activation_fn=tf.nn.relu, scope='fc2', batch_norm=True,
+                        is_tr=is_tr)
+            fc3 = dense(fc2, arg.D_layer, activation_fn=tf.nn.relu, scope='fc3', batch_norm=True,
+                        is_tr=is_tr)
+            out = dense(fc3, 1, activation_fn=tf.nn.sigmoid, scope='out')
+            return out
+
+        else:
+            input = tf.concat([x, z], axis=1)
+            fc1 = layer.fully_connected(input, 200, activation_fn=tf.nn.relu, scope='fc1')
+            fc2 = layer.fully_connected(fc1, 200, activation_fn=tf.nn.relu, scope='fc2')
+            fc3 = layer.fully_connected(fc2, 200, activation_fn=tf.nn.relu, scope='fc3')
+            out = layer.fully_connected(fc3, 1, activation_fn=tf.nn.sigmoid, scope='out')
+            return out
 
 
 '''

@@ -14,7 +14,11 @@ class ALI:
     def __init__(self):
         self.x = tf.placeholder(tf.float32, [None, 2])
         self.z = tf.placeholder(tf.float32, [None, arg.z_dim])
-        self.is_tr = tf.placeholder(tf.bool)
+
+        if arg.batch_norm:
+            self.is_tr = tf.placeholder(tf.bool)
+        else:
+            self.is_tr = None
 
         self.z_hat = Q(self.x, is_tr=self.is_tr)
         self.x_hat = P(self.z, is_tr=self.is_tr)
@@ -40,8 +44,8 @@ class ALI:
 
         # ls -right way
         if arg.loss == 'ls':
-            self.D_loss = 0.5 * tf.reduce_mean(self.D_gen ** 2 + (1 - self.D_enc) ** 2)
-            self.G_loss = 0.5 * tf.reduce_mean(self.D_enc ** 2 + (1 - self.D_gen) ** 2)
+            self.D_loss = 0.5 * tf.reduce_mean(self.D_enc ** 2 + (1 - self.D_gen) ** 2)
+            self.G_loss = 0.5 * tf.reduce_mean(self.D_gen ** 2 + (1 - self.D_enc) ** 2)
 
         else:
             self.D_loss = -tf.reduce_mean(self.log(self.D_enc) + self.log(1 - self.D_gen))
@@ -102,12 +106,18 @@ class ALI:
             x_feed = self.data.get_next_batch()
             z_feed = self.sample_z(len(x_feed), arg.z_dim)
 
-            loss_d, train_d = self.sess.run([self.D_loss, self.D_train],
-                                            feed_dict={self.x: x_feed, self.z: z_feed,
-                                                       self.is_tr: True})
-            loss_g, train_g = self.sess.run([self.G_loss, self.G_train],
-                                            feed_dict={self.x: x_feed, self.z: z_feed,
-                                                       self.is_tr: True})
+            if arg.batch_norm:
+                loss_d, train_d = self.sess.run([self.D_loss, self.D_train],
+                                                feed_dict={self.x: x_feed, self.z: z_feed,
+                                                           self.is_tr: True})
+                loss_g, train_g = self.sess.run([self.G_loss, self.G_train],
+                                                feed_dict={self.x: x_feed, self.z: z_feed,
+                                                           self.is_tr: True})
+            else:
+                loss_d, train_d = self.sess.run([self.D_loss, self.D_train],
+                                                feed_dict={self.x: x_feed, self.z: z_feed})
+                loss_g, train_g = self.sess.run([self.G_loss, self.G_train],
+                                                feed_dict={self.x: x_feed, self.z: z_feed})
 
             if i % 100 == 0:
                 print("iter : ", i, " D loss : ", loss_d, " G loss : ", loss_g)
@@ -137,9 +147,14 @@ class ALI:
             start = 0
             end = arg.batch_size
             while end <= len(i):
-                z = self.sess.run(self.z_hat, feed_dict={self.x: i[start:end],
-                                                         self.is_tr: False})
-                x = self.sess.run(self.x_hat, feed_dict={self.z: z, self.is_tr: False})
+                if arg.batch_norm:
+                    z = self.sess.run(self.z_hat, feed_dict={self.x: i[start:end],
+                                                             self.is_tr: False})
+                    x = self.sess.run(self.x_hat, feed_dict={self.z: z, self.is_tr: False})
+
+                else:
+                    z = self.sess.run(self.z_hat, feed_dict={self.x: i[start:end]})
+                    x = self.sess.run(self.x_hat, feed_dict={self.z: z})
 
                 start += arg.batch_size
                 end += arg.batch_size
