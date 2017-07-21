@@ -1,10 +1,12 @@
-# etc
-.DS
+.DS_Store
 *.npy
 *.png
 checkopoint
 ali_model*
-
-# figs
-
-/figs
+__pycache__/
+/result
+/logs
+/data
+.python-version
+test.py
+.idea/
