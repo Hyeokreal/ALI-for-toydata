@@ -3,9 +3,9 @@ import argparse
 parser = argparse.ArgumentParser(description='hyper parameters for gan')
 
 # learning rate for Discriminator and Generator
-parser.add_argument("-lrd", '--d_lr', type=float, default=0.00004,
+parser.add_argument("-lrd", '--d_lr', type=float, default=0.000004,
                     help='learning rate of optimizer')
-parser.add_argument("-lrg", '--g_lr', type=float, default=0.00002,
+parser.add_argument("-lrg", '--g_lr', type=float, default=0.000002,
                     help='learning rate of optimizer')
 
 
