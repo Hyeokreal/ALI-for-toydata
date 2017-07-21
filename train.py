@@ -34,11 +34,15 @@ class ALI:
         # self.D_loss = 0.5 * tf.reduce_mean(self.D_enc ** 2 + (1 - self.D_gen) ** 2)
         # self.G_loss = 0.5 * tf.reduce_mean(self.D_gen ** 2 + (1 - self.D_enc) ** 2)
 
+        #
+        # self.D_loss = 0.5 * tf.reduce_mean((1 + self.D_gen) ** 2 + (1 - self.D_enc) ** 2)
+        # self.G_loss = 0.5 * tf.reduce_mean((1 + self.D_enc) ** 2 + (1 - self.D_gen) ** 2)
 
         # ls -right way
         if arg.loss == 'ls':
-            self.D_loss = 0.5 * tf.reduce_mean((1 + self.D_gen) ** 2 + (1 - self.D_enc) ** 2)
-            self.G_loss = 0.5 * tf.reduce_mean((1 + self.D_enc) ** 2 + (1 - self.D_gen) ** 2)
+            self.D_loss = 0.5 * tf.reduce_mean(self.D_gen ** 2 + (1 - self.D_enc) ** 2)
+            self.G_loss = 0.5 * tf.reduce_mean(self.D_enc ** 2 + (1 - self.D_gen) ** 2)
+
         else:
             self.D_loss = -tf.reduce_mean(self.log(self.D_enc) + self.log(1 - self.D_gen))
             self.G_loss = -tf.reduce_mean(self.log(self.D_gen) + self.log(1 - self.D_enc))
