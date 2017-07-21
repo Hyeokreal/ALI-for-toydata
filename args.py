@@ -56,7 +56,7 @@ parser.add_argument('-E', '--E_layer', type=int, default=400,
                     help="number of first layer of Encoder")
 parser.add_argument('-D', '--D_layer', type=int, default=200,
                     help="number of first layer of Discriminator")
-parser.add_argument('-PT','--param_trick',type=str, default='split',
+parser.add_argument('-PT','--param_trick',type=str, default='each-connected',
                     help = "parameterizing trick")
 
 
