@@ -4,14 +4,14 @@ import tensorflow as tf
 import numpy as np
 import os
 from time import localtime, strftime
+from args import get_args
 
 # lr = 1e-3
-batch = 30
 g_lr = 0.000004
 d_lr = 0.000002
 z_dim = 2
 x_dim = 2
-
+arg = get_args()
 
 class ALI:
     def __init__(self):
@@ -49,7 +49,7 @@ class ALI:
         self.G_train = tf.train.AdamOptimizer(learning_rate=g_lr).minimize(self.G_loss,
                                                                            var_list=self.theta_G)
 
-        self.data = ToyData(load_saved=False, batch_size=batch)
+        self.data = ToyData(load_saved=False, batch_size=arg.batch_size)
 
         self.save = True
         self.load = False
@@ -117,13 +117,13 @@ class ALI:
             draw_list_x.clear()
             draw_list_z.clear()
             start = 0
-            end = batch
+            end = arg.batch_size
             while end <= len(i):
                 z = self.sess.run(self.z_hat, feed_dict={self.x: i[start:end]})
                 x = self.sess.run(self.x_hat, feed_dict={self.z: z})
 
-                start += batch
-                end += batch
+                start += arg.batch_size
+                end += arg.batch_size
                 draw_list_x.extend(x)
                 draw_list_z.extend(z)
 

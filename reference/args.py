@@ -9,9 +9,9 @@ parser.add_argument("-lrg", '--g_lr', type=float, default=0.000002,
                     help='learning rate of optimizer')
 
 
-parser.add_argument("-b", "--batch_size", type=int, default=50,
+parser.add_argument("-b", "--batch_size", type=int, default=30,
                     help='mini batch size')
-parser.add_argument("-i", "--iter", type=int, default=500000,
+parser.add_argument("-i", "--iter", type=int, default=1000000,
                     help='epoch : how many times you will iterate')
 
 # output dir paths
@@ -30,7 +30,7 @@ parser.add_argument("-zfd", "--z_fig_dir", type=str, default='/z_figs/',
 
 
 # Regarding data
-parser.add_argument("-m", '--mixtures', type=int, default=4,
+parser.add_argument("-m", '--mixtures', type=int, default=25,
                     help="number of mixtures")
 parser.add_argument('-n', '--num_dots', type=int, default=500,
                     help="number of dots per one class")

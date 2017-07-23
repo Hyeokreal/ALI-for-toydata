@@ -64,7 +64,7 @@ def D(x, z):
         fc1 = layer.fully_connected(input, 200, activation_fn=tf.nn.relu, scope='fc1')
         fc2 = layer.fully_connected(fc1, 200, activation_fn=tf.nn.relu, scope='fc2')
         fc3 = layer.fully_connected(fc2, 200, activation_fn=tf.nn.relu, scope='fc3')
-        out = layer.fully_connected(fc3, 1, activation_fn=tf.nn.tanh, scope='out')
+        out = layer.fully_connected(fc3, 1, activation_fn=tf.nn.sigmoid, scope='out')
     return out
 
 
