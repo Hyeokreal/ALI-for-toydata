@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib
 import os
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from args import get_args
@@ -18,7 +19,6 @@ class ToyData:
         self.data, self.data_c = self.load_data(load_saved, path)
         self.data_list = list(self.data)
 
-
     def load_data(self, load_saved, path):
         if load_saved:
             data, data_c = np.load(path + self.path_d), np.load(path + self.path_c)
@@ -26,7 +26,7 @@ class ToyData:
         else:
             return self.generate_data(number=self.args.num_dots)
 
-    def generate_data(self,mixtures=4, number=100):
+    def generate_data(self, mixtures=4, number=100):
         means = list()
 
         sq = np.sqrt(mixtures)
@@ -51,8 +51,8 @@ class ToyData:
 
         if not os.path.isdir(self.path):
             os.mkdir(self.path)
-        np.save(self.path+self.path_d, x)
-        np.save(self.path+self.path_c, x_1)
+        np.save(self.path + self.path_d, x)
+        np.save(self.path + self.path_c, x_1)
         return x, x_1
 
     def draw_x(self, given_data=None, save=False, figname=None):
@@ -98,4 +98,4 @@ class ToyData:
 
 if __name__ == '__main__':
     data = ToyData(load_saved=False, path='./data')
-    data.draw_x(given_data=data.data_c, save=True,figname='./fuck.png')
+    data.draw_x(given_data=data.data_c, save=True, figname='./fuck.png')

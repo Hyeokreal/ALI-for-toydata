@@ -38,10 +38,11 @@ def Q(x):
     with tf.variable_scope('GQ'):
         fc1 = layer.fully_connected(x, 400, activation_fn=tf.nn.relu, scope='fc1')
         fc2 = layer.fully_connected(fc1, 400, activation_fn=tf.nn.relu, scope='fc2')
+        fc3 = layer.fully_connected(fc2, 400, activation_fn=tf.nn.relu, scope='fc2')
         # fc3 = layer.fully_connected(fc2, 2 * z_dim, activation_fn=tf.nn.relu, scope='fc3')
         # mu, log_sig_sq = tf.split(fc3, 2, axis=1)
-        mu = layer.fully_connected(fc2, z_dim, activation_fn=None, scope='mu')
-        log_sig_sq = layer.fully_connected(fc2, z_dim, activation_fn=None, scope='log_sig_sq')
+        mu = layer.fully_connected(fc3, z_dim, activation_fn=None, scope='mu')
+        log_sig_sq = layer.fully_connected(fc3, z_dim, activation_fn=None, scope='log_sig_sq')
         e = tf.random_normal([batch, z_dim])
         out = tf.add(mu, tf.multiply(tf.exp(log_sig_sq / 2), e))
     return out
@@ -55,7 +56,8 @@ def P(z):
         fc1 = layer.fully_connected(z, 400, activation_fn=tf.nn.relu, scope='fc1')
         fc2 = layer.fully_connected(fc1, 400, activation_fn=tf.nn.relu, scope='fc2')
         fc3 = layer.fully_connected(fc2, 400, activation_fn=tf.nn.relu, scope='fc3')
-        out = layer.fully_connected(fc3, input_dim, activation_fn=None, scope='out')
+        fc4 = layer.fully_connected(fc3, 400, activation_fn=tf.nn.relu, scope='fc3')
+        out = layer.fully_connected(fc4, input_dim, activation_fn=None, scope='out')
     return out
 
 
@@ -66,7 +68,8 @@ def D(x, z):
         fc1 = layer.fully_connected(input, 200, activation_fn=tf.nn.relu, scope='fc1')
         fc2 = layer.fully_connected(fc1, 200, activation_fn=tf.nn.relu, scope='fc2')
         fc3 = layer.fully_connected(fc2, 200, activation_fn=tf.nn.relu, scope='fc3')
-        out = layer.fully_connected(fc3, 1, activation_fn=tf.nn.sigmoid, scope='out')
+        fc4 = layer.fully_connected(fc3, 200, activation_fn=tf.nn.relu, scope='fc3')
+        out = layer.fully_connected(fc4, 1, activation_fn=tf.nn.sigmoid, scope='out')
     return out
 
 
