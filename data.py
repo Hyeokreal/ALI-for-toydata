@@ -96,6 +96,6 @@ class ToyData:
         return self.data_c
 
 
-# if __name__ == '__main__':
-#     data = ToyData(load_saved=False, path='./data')
-#     data.draw_x(given_data=data.data_c, save=True,figname='./figs/fuck.png')
+if __name__ == '__main__':
+    data = ToyData(load_saved=False, path='./data')
+    data.draw_x(given_data=data.data_c, save=True,figname='./fuck.png')

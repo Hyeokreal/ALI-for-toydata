@@ -3,15 +3,15 @@ import argparse
 parser = argparse.ArgumentParser(description='hyper parameters for gan')
 
 # learning rate for Discriminator and Generator
-parser.add_argument("-lrd", '--d_lr', type=float, default=0.000004,
+parser.add_argument("-lrd", '--d_lr', type=float, default=0.0000005,
                     help='learning rate of optimizer')
-parser.add_argument("-lrg", '--g_lr', type=float, default=0.000002,
+parser.add_argument("-lrg", '--g_lr', type=float, default=0.00000025,
                     help='learning rate of optimizer')
 
 
-parser.add_argument("-b", "--batch_size", type=int, default=30,
+parser.add_argument("-b", "--batch_size", type=int, default=100,
                     help='mini batch size')
-parser.add_argument("-i", "--iter", type=int, default=1000000,
+parser.add_argument("-i", "--iter", type=int, default=2000000,
                     help='epoch : how many times you will iterate')
 
 # output dir paths

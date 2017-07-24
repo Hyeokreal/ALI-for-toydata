@@ -7,11 +7,13 @@ from time import localtime, strftime
 from args import get_args
 
 # lr = 1e-3
-g_lr = 0.000004
-d_lr = 0.000002
+
+arg = get_args()
+
+g_lr = arg.g_lr
+d_lr = arg.d_lr
 z_dim = 2
 x_dim = 2
-arg = get_args()
 
 class ALI:
     def __init__(self):
@@ -82,7 +84,7 @@ class ALI:
             saver = tf.train.import_meta_graph('ali_model.meta')
             saver.restore(self.sess, tf.train.latest_checkpoint('./'))
 
-        for i in range(500000):
+        for i in range(arg.iter):
             x_feed = self.data.get_next_batch()
             z_feed = self.sample_z(len(x_feed), z_dim)
 
