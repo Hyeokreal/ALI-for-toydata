@@ -1,8 +1,10 @@
 import tensorflow as tf
 import tensorflow.contrib.layers as layer
 from data import ToyData
+from args import get_args
 
-batch = 30
+arg = get_args()
+batch = arg.batch_size
 z_dim = 2
 input_dim = 2
 
